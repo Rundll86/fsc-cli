@@ -1,0 +1,15 @@
+<menu>
+    <option value="tomato">番茄酱</option>
+    <option value="mushroom">蘑菇酱</option>
+    <option value="butter">黄油酱</option>
+</menu>
+<menu id="fruits">
+    <option value="apple">苹果</option>
+    <option value="banana">香蕉</option>
+    <option value="orange">橘子</option>
+</menu>
+<menu id="vegetables">
+    <option value="carrot">胡萝卜</option>
+    <option value="potato">土豆</option>
+    <option value="onion">洋葱</option>
+</menu>

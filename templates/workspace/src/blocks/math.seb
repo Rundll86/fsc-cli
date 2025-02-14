@@ -1,0 +1,29 @@
+<reporter id="addNumber">
+    <text>
+        Add
+        <number ref="num1" />
+        to
+        <number ref="num2" />
+    </text>
+    <script>
+        const { num1, num2 } = args;
+        return num1 + num2;
+    </script>
+</reporter>
+<command id="multipleNumber">
+    <text>
+        Add
+        <number ref="n1" />
+        to
+        <number ref="n2" />
+    </text>
+    <script>
+        const { n1, n2 } = args;
+        return n1 * n2;
+    </script>
+</command>
+<bool>
+    <script>
+        return "hello"
+    </script>
+</bool>

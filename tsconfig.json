@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "outDir": "dist",
+        "esModuleInterop": true,
+        "lib": [
+            "ESNext"
+        ]
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
+}

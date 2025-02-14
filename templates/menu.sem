@@ -1,0 +1,5 @@
+<menu>
+    <option value="apple">苹果</option>
+    <option value="banana">香蕉</option>
+    <option value="orange">橘子</option>
+</menu>

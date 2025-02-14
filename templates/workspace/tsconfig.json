@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "typeRoots": [
+            "./node_modules"
+        ],
+        "types": [
+            "fs-context/types/import.d.ts"
+        ]
+    },
+    "include": [
+        "./src/**/*",
+        "./types/*.d.ts"
+    ]
+}
