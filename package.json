@@ -1,5 +1,5 @@
 {
-  "name": "fs-context",
+  "name": "fsc-cli",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -32,5 +32,8 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc --watch"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

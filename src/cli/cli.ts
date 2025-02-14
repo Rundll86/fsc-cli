@@ -7,6 +7,9 @@ import {
     copyFolderRecursive,
     isModuleGlobalInstalled,
     readAlias,
+    removeDirectories,
+    removeDirectory,
+    removePaths,
     requireFromCwd,
     run
 } from "../common/tools";
@@ -47,7 +50,8 @@ program.command("setup").alias("init")
                     "@types/node",
                     "ts-loader",
                     "typescript",
-                    `fs-context@${options.version}`
+                    `fs-context@${options.version}`,
+                    "webpack"
                 ]], false);
             });
         } catch {
@@ -69,9 +73,9 @@ program.command("setup").alias("init")
         });
     });
 program.command("compile")
-    .option("-w, --watch", "whether you want to monitor changes to the module", false)
-    .action(async (arg: { watch: boolean }) => {
-        if (arg.watch) Logger.info("Development server is running on 25565.");
+    .option("-d, --develop", "whether you want to compile extension as develop mode", false)
+    .action(async (arg: { develop: boolean }) => {
+        if (arg.develop) Logger.info("Development server is running on 25565.");
         const config: ConfigFile = requireFromCwd(program.opts().configFile);
         const compiler = webpack({
             entry: path.resolve(config.entry || "src/extension.ts"),
@@ -104,7 +108,7 @@ program.command("compile")
                     }
                 ]
             },
-            mode: "development",
+            mode: arg.develop ? "development" : "production",
             plugins: [
                 new Webpackbar({
                     name: "Extension",
@@ -118,7 +122,7 @@ program.command("compile")
             ],
             stats: "errors-warnings"
         });
-        if (!arg.watch) {
+        if (!arg.develop) {
             compiler.compile((err, comp) => { });
         } else {
             const wds = new WebpackDevServer({
@@ -136,4 +140,8 @@ program.command("compile")
             wds.start();
         };
     });
+const dangerCommand = program.command("danger");
+dangerCommand.command("reset").action(() => {
+    removePaths("src", "fsc.config.js", "tsconfig.json");
+});
 program.parse();

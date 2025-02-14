@@ -80,3 +80,34 @@ export function toArray<T>(data: {
 export function filenameWithoutExt(filename: string) {
     return path.basename(filename.slice(0, -path.extname(filename).length));
 };
+export async function removeDirectory(dirPath: string): Promise<void> {
+    if (!await fs.stat(dirPath).catch(() => false)) {
+        return;
+    };
+    const entries = await fs.readdir(dirPath, { withFileTypes: true });
+    const tasks = entries.map(entry => {
+        const fullPath = path.join(dirPath, entry.name);
+        return entry.isDirectory() ? removeDirectory(fullPath) : fs.unlink(fullPath);
+    });
+    await Promise.all(tasks);
+    await fs.rmdir(dirPath);
+};
+export async function removeDirectories(...dirs: string[]) {
+    await Promise.all(dirs.map(dir => removeDirectory(dir)));
+};
+export async function removeFiles(...filenames: string[]) {
+    await Promise.all(filenames.map(filename => fs.unlink(filename).catch(() => null)));
+};
+export async function removePaths(...paths: string[]): Promise<void> {
+    const tasks = paths.map(async (p) => {
+        const stat = await fs.stat(p).catch(() => null);
+        if (stat) {
+            if (stat.isDirectory()) {
+                await removeDirectory(p);
+            } else {
+                await fs.unlink(p);
+            };
+        };
+    });
+    await Promise.all(tasks);
+};
