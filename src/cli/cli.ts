@@ -7,8 +7,6 @@ import {
     copyFolderRecursive,
     isModuleGlobalInstalled,
     readAlias,
-    removeDirectories,
-    removeDirectory,
     removePaths,
     requireFromCwd,
     run
@@ -142,6 +140,7 @@ program.command("compile")
     });
 const dangerCommand = program.command("danger");
 dangerCommand.command("reset").action(() => {
-    removePaths("src", "fsc.config.js", "tsconfig.json");
+    Logger.progress("Removing data",
+        () => removePaths("src", "fsc.config.js", "tsconfig.json", "package.json", "node_modules"));
 });
 program.parse();
