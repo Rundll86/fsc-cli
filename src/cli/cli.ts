@@ -17,9 +17,11 @@ import WebpackDevServer from "webpack-dev-server";
 import Webpackbar from "webpackbar";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import { AllowedPackageManager, allowedPackageManagers, ConfigFile, ConfigFileAllRequired } from "../common/structs";
-import { writeFile } from "fs/promises";
+import { writeFile, readFile } from "fs/promises";
 program.option("-c, --config-file <cf>", "which config file does framework use", "fsc.config.js");
-program.command("setup").alias("init")
+program.command("setup")
+    .alias("init")
+    .description("create framework environment and install modules")
     .option("-u, --package-manager <pm>", "what package manager do you want to use", "yarn")
     .option("-v, --version", "what version of fs-context do you want to use", "latest")
     .action(async (options: {
@@ -71,9 +73,12 @@ program.command("setup").alias("init")
         });
     });
 program.command("compile")
+    .alias("build")
+    .description("call webpack to build extension or start a development server")
     .option("-d, --develop", "whether you want to compile extension as develop mode", false)
     .action(async (arg: { develop: boolean }) => {
         if (arg.develop) Logger.info("Development server is running on 25565.");
+        else Logger.info("Compiling server is running on local.");
         const config: ConfigFile = requireFromCwd(program.opts().configFile);
         const compiler = webpack({
             entry: path.resolve(config.entry || "src/extension.ts"),
@@ -121,7 +126,7 @@ program.command("compile")
             stats: "errors-warnings"
         });
         if (!arg.develop) {
-            compiler.compile((err, comp) => { });
+            compiler.run((_, __) => { });
         } else {
             const wds = new WebpackDevServer({
                 port: config.server?.port ?? 25565,
@@ -138,7 +143,28 @@ program.command("compile")
             wds.start();
         };
     });
-const dangerCommand = program.command("danger");
+program.command("create <name>")
+    .description("create a extension content with templates")
+    .option("-t, --template <template>", "which content template do you want", "seb")
+    .option("-l, --location <location>", "where do the content lay at", "src/blocks")
+    .action((name: string, options: { template: string, location: string }) => {
+        Logger.progress(`creating content "${name}.${options.template}" at ${options.location}`,
+            async () => {
+                const writeTargetRelative = path.join(options.location, `${name}.${options.template}`);
+                const writeTarget = path.resolve(writeTargetRelative);
+                if (existsSync(writeTarget)) {
+                    throw new Error(`Found ${writeTargetRelative} is already exist.`);
+                };
+                const templatePath = path.resolve(__dirname, "../..", `templates/create/.${options.template}`);
+                if (!existsSync(templatePath)) {
+                    throw new Error(`Cannot find template called "${options.template}".`);
+                };
+                const templateData = await readFile(templatePath);
+                await writeFile(writeTarget, templateData);
+            });
+    });
+const dangerCommand = program.command("danger")
+    .description("some danger function, don't use it");
 dangerCommand.command("reset").action(() => {
     Logger.progress("Removing data",
         () => removePaths("src", "fsc.config.js", "tsconfig.json", "package.json", "node_modules"));

@@ -31,6 +31,7 @@ export namespace Logger {
         stdout.write("\n");
     };
     export function message(msg: Message, br: boolean = true, upper: boolean = true) {
+        msg.data = msg.data.toString?.call(msg.data) ?? JSON.stringify(msg.data);
         const time = new Date(Date.now());
         loggedData.push(msg);
         stdout.write("[");
@@ -73,8 +74,9 @@ export namespace Logger {
                         resolve();
                     } catch (e) {
                         message({ type: MessageType.REJECTED, data: `${data}...Failed! \r` });
+                        Logger.error(e as string);
                         reject(e);
-                        exit(e as number);
+                        exit(1);
                     };
                     clearInterval(timeout);
                 };
